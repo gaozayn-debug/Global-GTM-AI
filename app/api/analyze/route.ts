@@ -1,3 +1,4 @@
+import { parseRecommendation } from "@/lib/ai-response";
 import { NextRequest, NextResponse } from "next/server";
 import { validateMarketInput } from "@/lib/market";
 import type { MarketInput } from "@/lib/types";
@@ -26,13 +27,18 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const body = (await request.json()) as { input?: Partial<MarketInput>; evidence?: unknown };
+  let raw: unknown;
+  try { raw = await request.json(); } catch { return NextResponse.json({error:"Invalid JSON"},{status:400}); }
+  if(!raw || typeof raw!=="object") return NextResponse.json({error:"Invalid body"},{status:400});
+  const body = raw as { input?: Partial<MarketInput>; evidence?: unknown };
   const errors = validateMarketInput(body.input ?? {});
   if (errors.length) return NextResponse.json({ error: "Invalid market brief", fields: errors }, { status: 400 });
 
   const input = body.input as MarketInput;
+  try {
   const response = await fetch("https://api.openai.com/v1/responses", {
     method: "POST",
+    signal: AbortSignal.timeout(20000),
     headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
     body: JSON.stringify({
       model,
@@ -47,19 +53,18 @@ export async function POST(request: NextRequest) {
   });
 
   if (!response.ok) {
-    const detail = await response.text();
-    return NextResponse.json({ error: "AI analysis failed", detail: detail.slice(0, 500) }, { status: 502 });
+    return NextResponse.json({ error: "AI analysis failed" }, { status: 502 });
   }
 
-  const result = (await response.json()) as { output_text?: string };
-  if (!result.output_text) return NextResponse.json({ error: "AI returned no structured output" }, { status: 502 });
+  const result: unknown = await response.json();
 
   try {
     return NextResponse.json({
-      recommendation: JSON.parse(result.output_text),
+      recommendation: parseRecommendation(result),
       meta: { mode: "ai-assisted", model, generatedAt: new Date().toISOString(), humanReviewRequired: true },
     });
   } catch {
     return NextResponse.json({ error: "AI output could not be parsed" }, { status: 502 });
   }
+  } catch { return NextResponse.json({error:"AI unavailable or timed out"},{status:502}); }
 }

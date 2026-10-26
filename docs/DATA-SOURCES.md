@@ -1,59 +1,26 @@
-# Trusted Data Sources & Citation Policy / 可信数据来源与引文规则
+# Data and assumptions / 数据来源
 
-## Source register / 数据源登记
+V2 所有数字来自用户输入或清楚标注的虚构演示。汇率、平台费、税率、竞品与需求均不声称实时或已验证。本版不显示竞品或宏观背景卡片。
+All V2 figures are user inputs or explicitly fictional demo assumptions. No live FX, platform fees, taxes, competitors or demand data are claimed.
 
-| Source | Intended use | MVP status | Authentication / limits | Citation captured |
-| --- | --- | --- | --- | --- |
-| [World Bank Indicators API](https://datahelpdesk.worldbank.org/knowledgebase/articles/889392-about-the-indicators-api-documentation) | Population, GDP per capita, internet use, urbanization | Live connector | No API key for Indicators API | Indicator ID, value, observation year, query URL, fetch time |
-| [UN Comtrade](https://comtradeplus.un.org/) | Product-level import value, partner share, trend | Planned | Account/API limits may apply | Reporter, partner, flow, HS version/code, period, value, download time |
-| [WTO Tariff Download Facility](https://www.wto.org/english/tratop_e/tariffs_e/database_explanation_e.htm) | MFN applied/bound tariff checks | Manual evidence gate | Public download; interpretation required | Reporter, HS6, tariff type, year, rate, file URL |
-| [UNSD HS 2022](https://unstats.un.org/unsd/classifications/Econ) | HS-code taxonomy and version | Reference | Public | HS version, code, description |
-| Marketplace listing | Competitor offer and price | Manual in MVP | Platform terms apply | URL, seller, variant, currency, observed price, timestamp, screenshot/reference ID |
-| Distributor interview | Margin, MOQ, service and territory constraints | Manual in MVP | Consent required | Interview date, role, structured notes, confidence |
+需要用户自行收集 / Evidence to collect:
+- 供应商正式报价与币种 / dated supplier quote and currency.
+- 物流与当地履约合同 / freight and fulfilment quotations.
+- 目标平台卖家中心与费用合同 / seller fee schedules and contract.
+- 当地税务与产品合规确认 / local tax and compliance review.
+- 小规模订单真实成交、退款及广告消耗 / actual pilot order/refund/ad records.
 
-## Data-mode definitions / 数据模式定义
+## 模型 / Model
+D = listPrice × (1 − discount). N = D × (1 − refundRate) / (1 + taxRate).
+L = (purchaseCost + freight) × FX. B = L + fulfilment + refundRate × returnHandling.
+C = N − B − D × platformFee − fixedCAC − D × adRate.
+Margin = C / N. Total = C × orders − startupBudget.
+K = (1 − discount) × [(1 − refundRate)/(1 + taxRate) − platformFee − adRate].
+Break-even list price = (B + fixedCAC)/K if K > 0.
+Target price = (B + fixedCAC)/[K − targetMargin × (1 − discount) × (1 − refundRate)/(1 + taxRate)] if denominator > 0.
+Maximum fixed CAC = N − B − D × (platformFee + adRate).
+Break-even orders = ceil(startupBudget / C), only if C > 0.
+Maximum discount = 1 − (B + fixedCAC) / {listPrice × [(1 − refundRate)/(1 + taxRate) − platformFee − adRate]}.
 
-### `example / 示例`
-
-Illustrative content used to demonstrate the workflow. It may be internally coherent but is not current market research. Example competitor prices and cost assumptions must never be copied into a real proposal without verification.
-
-### `live / 实时`
-
-Successfully retrieved from a named external source during the session. “Live” describes the retrieval path, not the observation date. The UI therefore displays the source year separately.
-
-### `proposed / 建议`
-
-A product positioning, channel mix or action plan that has not yet been validated. It is a recommendation, not a fact.
-
-### `ai-assisted / AI 辅助`
-
-Synthesized by a model from the supplied brief and evidence. It is not automatically true and remains subject to the same citation and human-review rules.
-
-## Citation policy / 引文规则
-
-1. **No naked numbers.** Every external number must carry source, market, period and retrieval context.
-2. **Observation date ≠ retrieval date.** Store both.
-3. **No source laundering.** A model answer is not the original source.
-4. **No false precision.** Round display values appropriately; retain raw values for audit.
-5. **No silent imputation.** Missing live data is shown as unavailable.
-6. **Separate proxy from target.** Internet usage is context, not category demand or TAM.
-7. **Version classifications.** Trade queries record HS version and code.
-8. **Archive decision evidence.** A production report should store an immutable evidence snapshot.
-
-## MVP indicator definitions / 第一版指标
-
-| ID | Indicator | Interpretation boundary |
-| --- | --- | --- |
-| `SP.POP.TOTL` | Population | Addressable context only; not customer count |
-| `NY.GDP.PCAP.CD` | GDP per capita, current USD | Broad purchasing-power context; not category willingness-to-pay |
-| `IT.NET.USER.ZS` | Individuals using the internet | Digital access context; not marketplace traffic |
-| `SP.URB.TOTL.IN.ZS` | Urban population share | Distribution context; not serviceable market size |
-
-## Before a real Malaysia launch / 真实决策前必须补齐
-
-- Confirm the product’s HS6 classification with a qualified broker.
-- Verify current duty, sales tax, origin rules and battery-related import requirements.
-- Confirm marketplace fee tables and payment/returns treatment for the exact seller program.
-- Capture at least ten timestamped competitor observations across variants and sellers.
-- Validate warranty reserve, reverse logistics and service SLA with local partners.
-- Run customer/keyword evidence and a controlled offer test before scaling.
+每单一件；退货不计库存残值；进货和履约成本按每笔下单计。平台费/广告按折后含税价不退还。税为简化含价销售税，不是普适 VAT/关税模型。关税须用户自行并入成本。正贡献不是需求证据。
+One item per order, no recovered inventory value, fees/ads not refunded. Simplified inclusive sales tax is not a universal VAT/duties model. Positive economics do not establish demand.
