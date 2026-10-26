@@ -14,3 +14,8 @@ Copy `.env.example` on a server only. Never commit keys. The V2 static app does 
 
 ## GitHub workflow
 V2 belongs on `feat/v2-profit-lab`; retain main history and review the PR. Static assets can be deployed independently of merging. Keep actual data out of the public repository.
+
+## Published V2
+Public app: https://globalgtm-profit-lab.azuretrail24.chatgpt.site/
+GitHub review: https://github.com/gaozayn-debug/Global-GTM-AI/pull/1
+Published via static cloud hosting and opened successfully in cloud Chrome. No Vercel authentication was needed.

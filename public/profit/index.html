@@ -1,1 +1,111 @@
-<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>GlobalGTM AI · 出海利润实验室</title><link rel="stylesheet" href="style.css"></head><body><header><a class="brand" href="#">G<span>↗</span> GlobalGTM <small>AI</small></a><span class="badge">PROFIT LAB / V2</span><button id="language">English guide</button></header><main><section class="hero"><div class="eyebrow">从出海想法，到第一笔算得清的生意</div><h1>这款产品出海卖，<br><em>到底赚不赚钱？</em></h1><p>GTM 就是决定卖给谁、在哪卖、定什么价、怎样获客。<br>先用真实成本算清经济账，再用小规模试销验证需求。</p><div class="actions"><button class="primary" id="electronics">↗ 体验消费电子</button><button id="fmcg">体验快消</button><button id="own">用我的产品试试</button></div><p class="note" id="scenario">当前：虚构演示假设 · 所有费率与汇率均非实时行情</p></section><details id="englishGuide" class="panel" hidden><summary>English quick guide</summary><p>Test your product economics in 30 seconds: choose an example, edit price and costs, then compare contribution, break-even price and CAC ceiling. FX means one sourcing-currency unit in selling currency. Positive contribution does not prove demand. All examples and rates are fictional assumptions. Download JSON to move your project between devices. Reports and detailed guidance currently use Chinese.</p></details><div class="workspace"><section class="inputs panel"><div class="sectiontitle"><span>01 / 产品与成本</span><b>把你的生意放进来</b></div><div id="fields"></div><details><summary>费用基数与税制边界（请先读）</summary><p>一单一件。标价含简化销售税，折后金额扣除退款后再除以 (1 + 税率) 得净收入。平台费与广告比例按折后含税成交价计，假设不退还。进货及头程以采购币种填，其他金额均为销售币种。每单都承担进货成本，退货商品不计残值；退货成本只填额外处理费。关税请计入成本，未含所得税或库存融资。</p></details></section><section class="results"><div id="error" role="alert"></div><div id="output" aria-live="polite"></div><section class="panel"><div class="sectiontitle"><span>03 / 渠道比较</span><b>同一产品，不同费用结构</b></div><p class="note">自定义假设，不代表任何平台的实际费率。共享商品与履约成本。</p><div class="channelinputs"><label>备选渠道名<input id="channelName" value="备选渠道"></label><label>平台费 %<input id="channelFee" type="number" min="0" max="99" value="6"></label><label>固定 CAC<input id="channelCac" type="number" min="0" value="24"></label></div><div id="channels"></div></section><section class="panel"><div class="sectiontitle"><span>04 / 交给下一步行动</span><b>诊断与试销计划</b></div><div id="diagnosis"></div><div class="actions"><button id="report">下载报告 TXT</button><button id="csv">明细 CSV</button><button id="save">保存项目 JSON</button><button id="load">载入项目</button><input id="file" type="file" accept=".json" hidden></div><p id="status" role="status" class="note">草稿仅保存在当前浏览器；下载 JSON 可跨设备载入。</p></section></section></div><footer>GlobalGTM AI · 确定性计算，无需 API key。当前诊断为规则驱动，未调用生成式 AI。<br>示例用于演示，实际费率与税务需人工核实。模型只判断经济可行性。</footer></main><script type="module" src="app.mjs"></script></body></html>
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>GlobalGTM AI · 出海利润实验室</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header>
+      <a class="brand" href="#">G<span>↗</span> GlobalGTM <small>AI</small></a
+      ><span class="badge">PROFIT LAB / V2</span
+      ><button id="language">English guide</button>
+    </header>
+    <main>
+      <section class="hero">
+        <div class="eyebrow">从出海想法，到第一笔算得清的生意</div>
+        <h1>这款产品出海卖，<br /><em>到底赚不赚钱？</em></h1>
+        <p>
+          GTM 就是决定卖给谁、在哪卖、定什么价、怎样获客。<br />先用真实成本算清经济账，再用小规模试销验证需求。
+        </p>
+        <div class="actions">
+          <button class="primary" id="electronics">↗ 体验消费电子</button
+          ><button id="fmcg">体验快消</button
+          ><button id="own">用我的产品试试</button>
+        </div>
+        <p class="note" id="scenario">
+          当前：虚构演示假设 · 所有费率与汇率均非实时行情
+        </p>
+      </section>
+      <details id="englishGuide" class="panel" hidden>
+        <summary>English quick guide</summary>
+        <p>
+          Test your product economics in 30 seconds: choose an example, edit
+          price and costs, then compare contribution, break-even price and CAC
+          ceiling. FX means one sourcing-currency unit in selling currency.
+          Positive contribution does not prove demand. All examples and rates
+          are fictional assumptions. Download JSON to move your project between
+          devices. Reports and detailed guidance currently use Chinese.
+        </p>
+      </details>
+      <div class="workspace">
+        <section class="inputs panel">
+          <div class="sectiontitle">
+            <span>01 / 产品与成本</span><b>把你的生意放进来</b>
+          </div>
+          <div id="fields"></div>
+          <details>
+            <summary>费用基数与税制边界（请先读）</summary>
+            <p>
+              一单一件。标价含简化销售税，折后金额扣除退款后再除以 (1 + 税率)
+              得净收入。平台费与广告比例按折后含税成交价计，假设不退还。进货及头程以采购币种填，其他金额均为销售币种。每单都承担进货成本，退货商品不计残值；退货成本只填额外处理费。关税请计入成本，未含所得税或库存融资。
+            </p>
+          </details>
+        </section>
+        <section class="results">
+          <div id="error" role="alert"></div>
+          <div id="output" aria-live="polite"></div>
+          <section class="panel">
+            <div class="sectiontitle">
+              <span>03 / 渠道比较</span><b>同一产品，不同费用结构</b>
+            </div>
+            <p class="note">
+              自定义假设，不代表任何平台的实际费率。共享商品与履约成本。
+            </p>
+            <div class="channelinputs">
+              <label
+                >备选渠道名<input id="channelName" value="备选渠道" /></label
+              ><label
+                >平台费 %<input
+                  id="channelFee"
+                  type="number"
+                  min="0"
+                  max="99"
+                  value="6" /></label
+              ><label
+                >固定 CAC<input
+                  id="channelCac"
+                  type="number"
+                  min="0"
+                  value="24"
+              /></label>
+            </div>
+            <div id="channels"></div>
+          </section>
+          <section class="panel">
+            <div class="sectiontitle">
+              <span>04 / 交给下一步行动</span><b>诊断与试销计划</b>
+            </div>
+            <div id="diagnosis"></div>
+            <div class="actions">
+              <button id="report">下载报告 TXT</button
+              ><button id="csv">明细 CSV</button
+              ><button id="save">保存项目 JSON</button
+              ><button id="load">载入项目</button
+              ><input id="file" type="file" accept=".json" hidden />
+            </div>
+            <p id="status" role="status" class="note">
+              草稿仅保存在当前浏览器；下载 JSON 可跨设备载入。
+            </p>
+          </section>
+        </section>
+      </div>
+      <footer>
+        GlobalGTM AI · 确定性计算，无需 API
+        key。当前诊断为规则驱动，未调用生成式 AI。<br />示例用于演示，实际费率与税务需人工核实。模型只判断经济可行性。
+      </footer>
+    </main>
+    <script type="module" src="app.mjs"></script>
+  </body>
+</html>

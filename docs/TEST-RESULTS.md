@@ -22,3 +22,6 @@ Actual cloud Chrome interactions against the managed preview:
 
 ## Limits
 Mobile CSS exists but no real-device usability test. No live OpenAI request, current exchange-rate retrieval, platform-rate verification, real demand study or paid test has been completed. Pure model tests do not establish business success.
+
+## Published acceptance
+Opened the public deployed URL and repeated price 129 → 50. The deployment displayed −27.68 MYR contribution and pause advice, then restored the demo.

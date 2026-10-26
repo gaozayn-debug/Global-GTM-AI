@@ -1,8 +1,138 @@
-export const defaults={name:'65W 氮化镓充电器',market:'马来西亚',currency:'MYR',costCurrency:'CNY',fx:0.65,price:129,discount:5,cost:55,freight:8,fulfilment:5,tax:6,fee:12,returns:5,returnCost:12,cac:18,adRate:0,fixed:3000,units:300,target:20};
-export function validate(p){const errors=[];if(!p||typeof p!=='object')return ['项目必须为对象'];for(const k of ['currency','costCurrency'])if(!['MYR','USD','CNY','PHP','THB','SGD','IDR','EUR','GBP','HKD'].includes(p[k]))errors.push('不支持的币种');for(const k of Object.keys(defaults)){if(typeof defaults[k]==='number' && (!Number.isFinite(p[k])||p[k]<0))errors.push(k+' 必须为非负有限数');}for(const k of ['discount','fee','returns','adRate'])if(p[k]>=100)errors.push(k+' 必须小于100%');if(p.tax>100)errors.push('税率不能超过100%');if(p.target>=100)errors.push('目标利润率必须小于100%');if(p.fx<=0)errors.push('汇率必须大于0');if(!Number.isInteger(p.units))errors.push('销量必须为整数');if(typeof p.name!=='string'||typeof p.market!=='string'||!p.name.trim()||!p.market.trim())errors.push('请填写产品和市场');if(p.currency===p.costCurrency&&p.fx!==1)errors.push('同币种汇率必须为1');return errors;}
-export function calculate(p){const errors=validate(p);if(errors.length)throw Error(errors.join('；'));const d=1-p.discount/100,r=p.returns/100,t=1+p.tax/100;const paid=p.price*d,net=paid*(1-r)/t,platform=paid*p.fee/100,ads=p.cac+paid*p.adRate/100,landed=(p.cost+p.freight)*p.fx,returnLoss=r*p.returnCost;const base=landed+p.fulfilment+returnLoss;const coefficient=d*((1-r)/t-(p.fee+p.adRate)/100);const contribution=net-base-platform-ads;const targetCoefficient=coefficient-p.target/100*d*(1-r)/t;const breakPrice=coefficient>0?(base+p.cac)/coefficient:null;return {paid,net,platform,ads,landed,returnLoss,base,contribution,margin:net>0?contribution/net*100:null,breakPrice,targetPrice:targetCoefficient>0?(base+p.cac)/targetCoefficient:null,maxCac:net-base-platform-paid*p.adRate/100,breakUnits:contribution>0?Math.ceil(p.fixed/contribution):null,total:contribution*p.units-p.fixed,discountLimit:breakPrice!==null&&p.price>0?(1-breakPrice*d/p.price)*100:null};}
-export function diagnostic(p,r){return [`${p.name} → ${p.market}：${r.contribution<=0?'暂停上架：每新增一单都亏损。':r.total<0?'单笔盈利，但当前销量不足以回收启动预算。':'在输入假设下可覆盖启动预算；可进入小规模试销验证。'}`,`每单贡献 ${r.contribution.toFixed(2)} ${p.currency}；${p.units} 单整体损益 ${r.total.toFixed(2)} ${p.currency}。`,`固定 CAC 上限 ${r.maxCac.toFixed(2)} ${p.currency}（保持广告比例不变）；保本标价 ${r.breakPrice===null?'不存在有限解':r.breakPrice.toFixed(2)}。`,r.contribution<=0?`下一步：先获取供应商或物流新报价，或测试消费者可接受的更高价格；恢复正贡献之前，不扩大投放或备货。`:`试销计划：先验证 20–50 单，逐单记录实际成交、退款、物流与广告；达到 CAC 上限立即暂停投放。`,`待验证：真实需求、转化率、当地合规与税务、平台合同费率。正利润不代表存在市场需求。`];}
-export function encodeProject(p){return JSON.stringify({version:2,project:p},null,2);}
-export function decodeProject(text){const v=JSON.parse(text);if(v.version!==2||!v.project)throw Error('不支持的项目格式');const errors=validate(v.project);if(errors.length)throw Error(errors.join('；'));return v.project;}
-export function csvCell(v){const s=String(v);return '"'+(/^[=+@\-\t\r]/.test(s)?"'":'')+s.replaceAll('"','""')+'"';}
-export function report(p,r){return ['GlobalGTM AI · 经济可行性报告',...diagnostic(p,r),'\n输入假设',...Object.entries(p).map(([k,v])=>`${k}: ${v}`),'\n计算明细',...Object.entries(r).map(([k,v])=>`${k}: ${v??'无有限解'}`),'\n模型边界：一单一件。售价含简化销售税，退款冲回收入；平台费和广告比例以折后含税成交价计，不退还。进货和头程按采购币种换算；其他金额为销售币种。所有订单均承担进货和履约成本，退回商品不计残值；退货成本为额外处理费用。未含所得税、关税、库存资金占用；请自行计入成本，不适用于正式税务核算。'].join('\n');}
+export const defaults = {
+  name: "65W 氮化镓充电器",
+  market: "马来西亚",
+  currency: "MYR",
+  costCurrency: "CNY",
+  fx: 0.65,
+  price: 129,
+  discount: 5,
+  cost: 55,
+  freight: 8,
+  fulfilment: 5,
+  tax: 6,
+  fee: 12,
+  returns: 5,
+  returnCost: 12,
+  cac: 18,
+  adRate: 0,
+  fixed: 3000,
+  units: 300,
+  target: 20,
+};
+export function validate(p) {
+  const errors = [];
+  if (!p || typeof p !== "object") return ["项目必须为对象"];
+  for (const k of ["currency", "costCurrency"])
+    if (
+      ![
+        "MYR",
+        "USD",
+        "CNY",
+        "PHP",
+        "THB",
+        "SGD",
+        "IDR",
+        "EUR",
+        "GBP",
+        "HKD",
+      ].includes(p[k])
+    )
+      errors.push("不支持的币种");
+  for (const k of Object.keys(defaults)) {
+    if (typeof defaults[k] === "number" && (!Number.isFinite(p[k]) || p[k] < 0))
+      errors.push(k + " 必须为非负有限数");
+  }
+  for (const k of ["discount", "fee", "returns", "adRate"])
+    if (p[k] >= 100) errors.push(k + " 必须小于100%");
+  if (p.tax > 100) errors.push("税率不能超过100%");
+  if (p.target >= 100) errors.push("目标利润率必须小于100%");
+  if (p.fx <= 0) errors.push("汇率必须大于0");
+  if (!Number.isInteger(p.units)) errors.push("销量必须为整数");
+  if (
+    typeof p.name !== "string" ||
+    typeof p.market !== "string" ||
+    !p.name.trim() ||
+    !p.market.trim()
+  )
+    errors.push("请填写产品和市场");
+  if (p.currency === p.costCurrency && p.fx !== 1)
+    errors.push("同币种汇率必须为1");
+  return errors;
+}
+export function calculate(p) {
+  const errors = validate(p);
+  if (errors.length) throw Error(errors.join("；"));
+  const d = 1 - p.discount / 100,
+    r = p.returns / 100,
+    t = 1 + p.tax / 100;
+  const paid = p.price * d,
+    net = (paid * (1 - r)) / t,
+    platform = (paid * p.fee) / 100,
+    ads = p.cac + (paid * p.adRate) / 100,
+    landed = (p.cost + p.freight) * p.fx,
+    returnLoss = r * p.returnCost;
+  const base = landed + p.fulfilment + returnLoss;
+  const coefficient = d * ((1 - r) / t - (p.fee + p.adRate) / 100);
+  const contribution = net - base - platform - ads;
+  const targetCoefficient = coefficient - ((p.target / 100) * d * (1 - r)) / t;
+  const breakPrice = coefficient > 0 ? (base + p.cac) / coefficient : null;
+  return {
+    paid,
+    net,
+    platform,
+    ads,
+    landed,
+    returnLoss,
+    base,
+    contribution,
+    margin: net > 0 ? (contribution / net) * 100 : null,
+    breakPrice,
+    targetPrice:
+      targetCoefficient > 0 ? (base + p.cac) / targetCoefficient : null,
+    maxCac: net - base - platform - (paid * p.adRate) / 100,
+    breakUnits: contribution > 0 ? Math.ceil(p.fixed / contribution) : null,
+    total: contribution * p.units - p.fixed,
+    discountLimit:
+      breakPrice !== null && p.price > 0
+        ? (1 - (breakPrice * d) / p.price) * 100
+        : null,
+  };
+}
+export function diagnostic(p, r) {
+  return [
+    `${p.name} → ${p.market}：${r.contribution <= 0 ? "暂停上架：每单无法产生正贡献。" : r.total < 0 ? "单笔盈利，但当前销量不足以回收启动预算。" : "在输入假设下可覆盖启动预算；可进入小规模试销验证。"}`,
+    `每单贡献 ${r.contribution.toFixed(2)} ${p.currency}；${p.units} 单整体损益 ${r.total.toFixed(2)} ${p.currency}。`,
+    `固定 CAC 上限 ${r.maxCac.toFixed(2)} ${p.currency}（保持广告比例不变）；保本标价 ${r.breakPrice === null ? "不存在有限解" : r.breakPrice.toFixed(2)}。`,
+    r.contribution <= 0
+      ? `下一步：先获取供应商或物流新报价，或测试消费者可接受的更高价格；恢复正贡献之前，不扩大投放或备货。`
+      : `试销计划：先验证 20–50 单，逐单记录实际成交、退款、物流与广告；达到 CAC 上限立即暂停投放。`,
+    `待验证：真实需求、转化率、当地合规与税务、平台合同费率。正利润不代表存在市场需求。`,
+  ];
+}
+export function encodeProject(p) {
+  return JSON.stringify({ version: 2, project: p }, null, 2);
+}
+export function decodeProject(text) {
+  const v = JSON.parse(text);
+  if (v.version !== 2 || !v.project) throw Error("不支持的项目格式");
+  const errors = validate(v.project);
+  if (errors.length) throw Error(errors.join("；"));
+  return v.project;
+}
+export function csvCell(v) {
+  const s = String(v);
+  return (
+    '"' + (typeof v === "string" && /^[=+@\-\t\r]/.test(s) ? "'" : "") + s.replaceAll('"', '""') + '"'
+  );
+}
+export function report(p, r) {
+  return [
+    "GlobalGTM AI · 经济可行性报告",
+    ...diagnostic(p, r),
+    "\n输入假设",
+    ...Object.entries(p).map(([k, v]) => `${k}: ${v}`),
+    "\n计算明细",
+    ...Object.entries(r).map(([k, v]) => `${k}: ${v ?? "无有限解"}`),
+    "\n模型边界：一单一件。售价含简化销售税，退款冲回收入；平台费和广告比例以折后含税成交价计，不退还。进货和头程按采购币种换算；其他金额为销售币种。所有订单均承担进货和履约成本，退回商品不计残值；退货成本为额外处理费用。未含所得税、关税、库存资金占用；请自行计入成本，不适用于正式税务核算。",
+  ].join("\n");
+}
