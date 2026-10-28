@@ -1,83 +1,29 @@
-# GlobalGTM AI
+# GlobalGTM AI V2 · 出海利润实验室
 
-> Evidence-first AI copilot for cross-border market-entry decisions. 证据优先的出海市场进入决策助手。
+**这款产品出海卖，究竟赚不赚钱？** 输入成本、定价和渠道假设，得到真实可复算的贡献利润、CAC 上限、保本价与预算回本订单数。
 
-GlobalGTM AI turns a product, target market and commercial assumptions into an auditable 90-day go-to-market recommendation. It is designed as a portfolio project for KA/BD, international e-commerce and management-trainee interviews — not as a production financial-advice system.
+Test cross-border unit economics before committing a pilot budget. Chinese-first with bilingual fields/metrics and an English quick guide.
 
-## What is included
+## 30 秒体验
+1. 点击消费电子或快消演示（所有示例参数均为虚构假设）。
+2. 改标价、采购成本、汇率、退款或 CAC；结果立即改变。
+3. 比较自定义渠道，下载 TXT 报告、明细 CSV 或 JSON 项目。
 
-- Six polished SaaS views: market brief, research, competitor matrix, unit economics, entry strategy and decision memo.
-- A zero-key example mode that remains fully navigable.
-- Live World Bank indicators with source URL, observation year and explicit failure states.
-- Optional server-side OpenAI Responses API integration using Structured Outputs.
-- Human approval gate before a decision memo can be exported.
-- Bilingual UI, responsive layout and local draft persistence.
-- 20+ automated tests for calculations, validation and evidence boundaries.
-- Bilingual product, architecture, data, evaluation, deployment and interview documentation.
+消费电子默认每单贡献约 30.58 MYR，99 单覆盖 3000 MYR 固定预算。标价改为 50 MYR，每单亏损约 27.68 MYR，建议暂停上架。正利润仅代表假设下经济可行，不代表市场需求。
 
-## Quick start
-
-Requirements: Node.js 20.9+ and npm.
-
-```bash
-npm install
-cp .env.example .env.local
-npm run dev
-```
-
-Open [http://localhost:3000](http://localhost:3000). The complete example workflow works without an API key. To enable AI review, add your own server-side `OPENAI_API_KEY` and an `OPENAI_MODEL` available to your account.
-
-## Verification
-
-```bash
+## Run / Test
+```sh
+npm ci
 npm test
 npm run typecheck
 npm run build
 ```
+Next root embeds the same standalone app in `public/profit/`. Publish that folder for serverless static hosting; no key, external requests or owner's computer needed. Local dev is optional via `npm run dev`.
 
-## Data integrity contract
+## What is real
+Pure deterministic equations, live edits, input validation, FX translation, two-channel comparison, downloads, JSON import and browser-local draft recovery. No dummy action buttons, static competitors or fabricated confidence scores in V2.
 
-| Label | Meaning |
-| --- | --- |
-| `EXAMPLE / 示例` | Illustrative portfolio content; never a current market fact |
-| `LIVE / 实时` | Returned from the linked public API with an observation year |
-| `PROPOSED / 建议` | A strategy hypothesis awaiting human review |
-| `AI-ASSISTED` | Model-generated output constrained to supplied evidence |
+## Boundaries
+No demand forecasting, live marketplace rates, live currency feed, batch SKU import, cloud project sync or generative AI in the main flow. Report guidance currently Chinese; metrics/fields bilingual. Simplified tax/refund model is documented on page and in [data/model notes](docs/DATA-SOURCES.md). Legacy APIs and tests remain for regression; the AI parser is fixed but no live model request has been verified.
 
-No market-size number, tariff, competitor price or test result is silently invented. When a live source fails, the interface shows “unavailable” rather than substituting a plausible number.
-
-## Architecture at a glance
-
-```text
-Browser (Next.js / React)
-  ├─ editable commercial brief + local draft
-  ├─ deterministic unit-economics engine
-  └─ human-review gate
-        │
-        ├─ GET /api/market-data ── World Bank Indicators API
-        └─ POST /api/analyze ───── OpenAI Responses API (optional)
-                                      key remains server-side
-```
-
-## Documentation
-
-- [Product requirements / 中英双语 PRD](docs/PRD.md)
-- [User stories and acceptance criteria](docs/USER-STORIES.md)
-- [Technical architecture and agent workflow](docs/ARCHITECTURE.md)
-- [Trusted data sources and citation policy](docs/DATA-SOURCES.md)
-- [Evaluation plan and 25+ test cases](docs/EVALUATION.md)
-- [Executed test results](docs/TEST-RESULTS.md)
-- [Deployment and GitHub guide](docs/DEPLOYMENT.md)
-- [5-minute interview demo script](docs/INTERVIEW-DEMO.md)
-
-## Important limitations
-
-The competitor matrix, entry plan and cost assumptions ship as a clearly labelled example. They are not verified Malaysia market research. Tariffs, compliance, marketplace fees and tax treatment require qualified human verification before any business decision.
-
-## Verified MVP status
-
-On 2026-10-27 the project passed 32/32 automated tests, TypeScript checking, a Next.js production build and a production dependency audit with zero known vulnerabilities. See the executed-results document for scope and limits.
-
-## License
-
-MIT — see [LICENSE](LICENSE).
+[PRD](docs/PRD.md) · [Acceptance](docs/USER-STORIES.md) · [Architecture](docs/ARCHITECTURE.md) · [Evaluation](docs/EVALUATION.md) · [Test results](docs/TEST-RESULTS.md) · [Deployment](docs/DEPLOYMENT.md) · [Interview](docs/INTERVIEW-DEMO.md)

@@ -1,37 +1,27 @@
-# Executed Test Results / 实际测试结果
+# Actual test results / 实际测试
 
-**Execution date:** 2026-10-27  
-**Environment:** Node.js 20.17.0, npm 10.8.2  
-**Scope:** MVP source state included in this repository
+Executed in the Work cloud container on 2026-10-27 (Asia/Shanghai).
 
-## Automated verification
+- `npm test`: 72 passed, 0 failed. 32 are legacy regression tests; 34 are new V2 profit model/codec tests; 6 test REST output parsing with fixtures.
+- `npm run typecheck`: passed.
+- `npm run build`: passed for Next.js 16.4.3, React 19.3.1, TypeScript 7.0.2.
+- A failing discount-threshold test exposed a missing discount factor; corrected and reran all new model checks successfully.
 
-| Check | Command | Result |
-| --- | --- | --- |
-| Deterministic/content tests | `npm test` | **PASS — 32/32 tests, 0 failed** |
-| TypeScript | `npm run typecheck` | **PASS** |
-| Production build | `npm run build` | **PASS** |
-| Production dependency audit | `npm audit --omit=dev` | **PASS — 0 known vulnerabilities** |
+## Browser acceptance / 浏览器
+Actual cloud Chrome interactions against the managed preview:
+1. Initial electronic scenario rendered all metrics: contribution 30.58 MYR, break-even 99 orders.
+2. Price changed 129 → 50: contribution −27.68 MYR, total −11,303.77 MYR, pause decision.
+3. Browser reload restored price 50 rather than overwriting with defaults.
+4. FMCG scenario changed product, market, FX, costs and results: 0.09 PHP contribution and overall loss at 200 orders.
+5. Changing currency to USD cleared FX, cleared stale results and disabled downloads.
+6. Alternative channel fee changed to 30%: contribution changed to 2.52 MYR and recommendation changed to current channel.
+7. JSON export produced an actual browser download.
+8. Exported JSON reimported after price modification: restored 129, positive results and alternative fee 30%.
 
-The build produced the static application page plus dynamic `/api/analyze` and `/api/market-data` routes.
+9. TXT report and CSV detail exports both produced actual downloaded nonempty files; CSV contained model metrics.
 
-## Browser QA
+## Limits
+Mobile CSS exists but no real-device usability test. No live OpenAI request, current exchange-rate retrieval, platform-rate verification, real demand study or paid test has been completed. Pure model tests do not establish business success.
 
-| Scenario | Result | Evidence observed |
-| --- | --- | --- |
-| Six-step navigation | PASS | All six headings rendered without runtime error |
-| English/Chinese toggle | PASS | Report heading switched in both directions without state loss |
-| Example disclosure | PASS | Example and proposed badges visible in relevant views |
-| Failed live source | PASS | World Bank returned upstream HTTP 502 during QA; UI showed unavailable and inserted no number |
-| Human review gate | PASS | Export button disabled before review and enabled after checkbox |
-| Responsive small viewport | PASS | 558px browser viewport used compact top navigation and single-column cards |
-
-## API boundary QA
-
-- Missing OpenAI configuration returns an explicit 503; the example workflow remains available.
-- Invalid market-data country codes return 400 before an external request.
-- The live-source failure response contains no substituted value.
-
-## Important interpretation
-
-These results verify software behavior; they do **not** claim that illustrative competitor prices, cost assumptions or the Malaysia launch recommendation are current market facts. A real decision requires the evidence gates listed in `DATA-SOURCES.md`.
+## Published acceptance
+Opened the public deployed URL and repeated price 129 → 50. The deployment displayed −27.68 MYR contribution and pause advice, then restored the demo.

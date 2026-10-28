@@ -1,13 +1,13 @@
 {
   "name": "globalgtm-ai",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "description": "Evidence-first AI copilot for cross-border go-to-market planning.",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "test": "tsc -p tsconfig.test.json && node --test .test-dist/tests/*.test.js",
+    "test": "tsc -p tsconfig.test.json && node --test .test-dist/tests/*.test.js && node --test tests/*.test.mjs",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
